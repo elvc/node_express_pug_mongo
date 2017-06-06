@@ -3,7 +3,7 @@
 ## Overview
 A standard CRUD application that manages articles using Node.js, Express.js.
 
-Also, I am trying to experiment Pug, MongoDB (with Mongoose), express-validator and express-messages.
+The goal is to experiment Pug, MongoDB (with Mongoose), express-validator and express-messages.
 
 ## Usage
 Clone the project and run:
