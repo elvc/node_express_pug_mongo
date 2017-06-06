@@ -96,20 +96,35 @@ app.get('/articles/add', function(req, res){
 
 // submit new article 
 app.post('/articles/add', function(req, res){
-  let article = new Article();
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
+  // Express validator
+  req.checkBody('title', 'Title is required').notEmpty();
+  req.checkBody('author', 'Author is required').notEmpty();
+  req.checkBody('body', 'Body is required').notEmpty();
+  
+  // Get errors
+  let errors = req.validationErrors();
 
-  article.save(function(err){
-    if(err) {
-      console.error(err);
-      return;
-    } else {
-      req.flash('success', 'Article Added');
-      res.redirect('/');
-    }
-  })
+  if(errors){
+    res.render('add_article', {
+      title: 'Add Article',
+      errors: errors
+    });
+  } else {
+    let article = new Article();
+    article.title = req.body.title;
+    article.author = req.body.author;
+    article.body = req.body.body;
+
+    article.save(function(err){
+      if(err) {
+        console.error(err);
+        return;
+      } else {
+        req.flash('success', 'Article Added');
+        res.redirect('/');
+      }
+    });
+  }
 });
 
 // load edit form
