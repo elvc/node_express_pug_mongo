@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
+const session = require('express-session');
 const Article = require('./models/article');
 
 mongoose.connect('mongodb://localhost/nodekb');
@@ -29,6 +32,38 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Express Session middleware
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Express Messages Middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+// Express Validator Middleware
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
 
 app.get('/', function (req, res) {
   Article.find({}, function(err, articles){
@@ -71,6 +106,7 @@ app.post('/articles/add', function(req, res){
       console.error(err);
       return;
     } else {
+      req.flash('success', 'Article Added');
       res.redirect('/');
     }
   })
@@ -100,6 +136,7 @@ app.post('/articles/edit/:id', function(req, res){
       console.error(err);
       return;
     } else {
+      req.flash('success', 'Article Updated');
       res.redirect('/');
     }
   })
@@ -113,6 +150,7 @@ app.delete('/article/:id', function(req, res){
       console.error(err);
       return;
     } else {
+      req.flash('success', 'Article Deleted')
       res.send('Success');
     }
   });
