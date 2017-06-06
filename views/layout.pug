@@ -2,9 +2,28 @@ doctype html
 html
   head
     title Knowledgebase
+    link(rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.css')
   body
-    block content
-    br
-    hr
-    footer
-      p Copyright &copy; 2017
+    nav.navbar.navbar-inverse
+      .container
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.navbar-brand(href='#') Knowledgebase
+        #navbar.collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li
+              a(href='/') Home
+            li
+              a(href='/articles/add') Add Article
+    .container
+      block content
+      br
+      hr
+      footer
+        p Copyright &copy; 2017
+    script(src='/bower_components/jquery/dist/jquery.js')
+    script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
