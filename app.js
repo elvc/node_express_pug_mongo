@@ -5,11 +5,13 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
+const config = require('./config/database');
 
 // Article model
 const Article = require('./models/article');
 
-mongoose.connect('mongodb://localhost/nodekb');
+mongoose.connect(config.database);
 const db = mongoose.connection;
 
 // Check connection
@@ -67,6 +69,18 @@ app.use(expressValidator({
   }
 }));
 
+// Passport config
+require('./config/passport')(passport);
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', function(req, res, next){
+  res.locals.user = req.user || null;
+  next();
+});
+
 app.get('/', function (req, res) {
   Article.find({}, function(err, articles){
     if(err){
@@ -82,8 +96,10 @@ app.get('/', function (req, res) {
 
 // Route Files
 let articles = require('./routes/articles');
+let users = require('./routes/users');
 // Any routes that goes to '/articles' will go to the 'articles.js' file in route
 app.use('/articles', articles);
+app.use('/users', users);
 
 app.listen(3000, function(){
   console.log(`Server started on port 3000`);
