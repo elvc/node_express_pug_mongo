@@ -52,13 +52,14 @@ app.get('/article/:id', function(req, res){
   });
 });
 
-// add new article
+// new article form
 app.get('/articles/add', function(req, res){
   res.render('add_article', {
     title: 'Add Article'
   });
 });
 
+// submit new article 
 app.post('/articles/add', function(req, res){
   let article = new Article();
   article.title = req.body.title;
@@ -72,8 +73,49 @@ app.post('/articles/add', function(req, res){
     } else {
       res.redirect('/');
     }
-
   })
+});
+
+// load edit form
+app.get('/article/edit/:id', function(req, res){
+  Article.findById(req.params.id, function(err, article){
+    res.render('edit_article', {
+      title: 'Edit Article',
+      article: article
+    });
+  });
+});
+
+// update submit new article 
+app.post('/articles/edit/:id', function(req, res){
+  let article = {};
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+
+  let query = {_id: req.params.id};
+
+  Article.update(query, article, function(err){
+    if(err) {
+      console.error(err);
+      return;
+    } else {
+      res.redirect('/');
+    }
+  })
+});
+
+app.delete('/article/:id', function(req, res){
+  let query = {_id: req.params.id};
+
+  Article.remove(query, function(err){
+    if(err) {
+      console.error(err);
+      return;
+    } else {
+      res.send('Success');
+    }
+  });
 });
 
 app.listen(3000, function(){
